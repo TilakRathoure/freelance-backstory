@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { cn } from "~/lib/cn";
 import { gsap, prefersReducedMotion, registerGsap } from "~/lib/gsap";
@@ -11,7 +11,7 @@ export function ParallaxImage({
   alt,
   className,
   imageClassName,
-  speed = 20,
+  speed = 16,
   priority = false,
   sizes = "(max-width: 768px) 100vw, 50vw",
 }: {
@@ -25,11 +25,20 @@ export function ParallaxImage({
 }) {
   const wrap = useRef<HTMLDivElement>(null);
   const img = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    setEnabled(
+      !prefersReducedMotion() &&
+        window.matchMedia("(pointer: fine)").matches &&
+        window.innerWidth >= 768,
+    );
+  }, []);
 
   useGSAP(
     () => {
       registerGsap();
-      if (!wrap.current || !img.current || prefersReducedMotion()) return;
+      if (!enabled || !wrap.current || !img.current) return;
 
       gsap.to(img.current, {
         yPercent: speed,
@@ -42,12 +51,19 @@ export function ParallaxImage({
         },
       });
     },
-    { scope: wrap },
+    { scope: wrap, dependencies: [enabled, speed] },
   );
 
   return (
     <div ref={wrap} className={cn("overflow-hidden", className)}>
-      <div ref={img} className={cn("relative h-full w-full scale-110", imageClassName)}>
+      <div
+        ref={img}
+        className={cn(
+          "relative h-full w-full",
+          enabled && "scale-110",
+          imageClassName,
+        )}
+      >
         <Image
           src={src}
           alt={alt}

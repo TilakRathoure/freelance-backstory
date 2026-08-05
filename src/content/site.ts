@@ -19,60 +19,69 @@ export const site = {
   about: {
     label: "Who We Are",
     heading: "A studio for brands\nthat refuse to blend in.",
+    pullQuote: "Not louder. More precise.",
     paragraphs: [
       "Backstory Studio is a luxury creative practice shaped by fashion editorial thinking, strategic clarity, and emotional branding. We build identities that feel intentional — quiet where they should whisper, bold where they should linger.",
-      "From first impression to lasting cultural presence, we design the systems, stories, and experiences that make a brand unforgettable. Not louder. More precise.",
-    ],
-  },
-  philosophy: {
-    label: "Our Approach",
-    heading: "From understanding\nto lasting scale.",
-    steps: [
-      {
-        title: "Understand",
-        body: "We listen deeply — to the founder, the audience, the cultural moment — until the real story surfaces.",
-      },
-      {
-        title: "Strategize",
-        body: "Positioning, narrative architecture, and competitive clarity become the foundation for every visual decision.",
-      },
-      {
-        title: "Design",
-        body: "Editorial systems, typography, and imagery come together into a language that feels inevitable.",
-      },
-      {
-        title: "Build",
-        body: "Digital experiences, content engines, and brand assets are crafted with obsessive attention to detail.",
-      },
-      {
-        title: "Scale",
-        body: "We leave you with a living brand — ready to grow across channels without losing its soul.",
-      },
+      "From first impression to lasting cultural presence, we design the systems, stories, and experiences that make a brand unforgettable.",
     ],
   },
   process: {
     label: "How We Work",
-    heading: "A considered path\nto launch.",
+    heading: "From understanding\nto lasting growth.",
     steps: [
-      "Discovery",
-      "Research",
-      "Strategy",
-      "Identity",
-      "Content",
-      "Launch",
-      "Growth",
+      {
+        title: "Understand",
+        body: "We listen deeply — to the founder, the audience, the cultural moment — until the real story surfaces.",
+        image:
+          "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=80",
+      },
+      {
+        title: "Strategize",
+        body: "Positioning, narrative architecture, and competitive clarity become the foundation for every visual decision.",
+        image:
+          "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80",
+      },
+      {
+        title: "Design",
+        body: "Editorial systems, typography, and imagery come together into a language that feels inevitable.",
+        image:
+          "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1400&q=80",
+      },
+      {
+        title: "Build",
+        body: "Digital experiences, content engines, and brand assets are crafted with obsessive attention to detail.",
+        image:
+          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
+      },
+      {
+        title: "Scale",
+        body: "We leave you with a living brand — ready to grow across channels without losing its soul.",
+        image:
+          "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1400&q=80",
+      },
+      {
+        title: "Launch",
+        body: "Go-to-market moments are paced like editorials — intentional, memorable, impossible to ignore quietly.",
+        image:
+          "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1400&q=80",
+      },
+      {
+        title: "Growth",
+        body: "After launch, we refine systems so the story compounds — consistently, across every touchpoint.",
+        image:
+          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+      },
     ],
   },
   brandingShowcase: {
-    label: "Systems",
-    heading: "Branding, built\nto endure.",
+    heading: "Systems built\nto endure.",
     items: [
-      { title: "Color Palettes", caption: "Restrained. Warm. Memorable." },
-      { title: "Typography", caption: "Editorial contrast as identity." },
+      { title: "Color", caption: "Restrained. Warm. Memorable." },
+      { title: "Type", caption: "Editorial contrast as identity." },
       { title: "Packaging", caption: "Tactile stories on shelf." },
       { title: "Stationery", caption: "Quiet luxury in print." },
-      { title: "Logo Construction", caption: "Geometry with intention." },
-      { title: "Mockups", caption: "Where vision becomes real." },
+      { title: "Mark", caption: "Geometry with intention." },
+      { title: "Application", caption: "Where vision becomes real." },
     ],
   },
   cta: {

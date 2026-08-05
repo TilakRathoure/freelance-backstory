@@ -9,10 +9,10 @@ export function Footer() {
           {site.name}
         </p>
         <div className="mt-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <a
               href={`mailto:${site.email}`}
-              className="text-body text-ink transition-colors duration-500 hover:text-gold"
+              className="link-underline w-fit text-ink"
               data-cursor="EMAIL"
             >
               {site.email}
@@ -21,14 +21,14 @@ export function Footer() {
               href={site.instagram}
               target="_blank"
               rel="noreferrer"
-              className="text-label"
+              className="link-underline text-label w-fit"
               data-cursor="OPEN"
             >
               Instagram
             </a>
           </div>
           <div className="flex flex-col gap-3 md:items-end">
-            <Link href="/#work" className="text-label" data-cursor="VIEW">
+            <Link href="/#work" className="link-underline text-label" data-cursor="VIEW">
               Work
             </Link>
             <p className="text-sm text-muted">{site.footer.copyright}</p>

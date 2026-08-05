@@ -6,27 +6,10 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import type { Project } from "~/content/projects";
 import { Reveal } from "~/components/motion/reveal";
-import { ParallaxImage } from "~/components/motion/parallax-image";
-import { buttonVariants } from "~/components/ui/button";
 import { gsap, prefersReducedMotion, registerGsap } from "~/lib/gsap";
 import { cn } from "~/lib/cn";
 
-function SectionHeading({
-  label,
-  title,
-}: {
-  label: string;
-  title: string;
-}) {
-  return (
-    <Reveal>
-      <p className="text-label mb-4">{label}</p>
-      <h2 className="text-display-sm text-ink">{title}</h2>
-    </Reveal>
-  );
-}
-
-function ImageGrid({
+function GalleryBatch({
   images,
   alt,
   className,
@@ -35,26 +18,90 @@ function ImageGrid({
   alt: string;
   className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      registerGsap();
+      if (!ref.current || prefersReducedMotion()) return;
+
+      const frames = ref.current.querySelectorAll(".gallery-frame");
+      gsap.fromTo(
+        frames,
+        { y: 48, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          stagger: 0.08,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 80%",
+            once: true,
+          },
+        },
+      );
+    },
+    { scope: ref },
+  );
+
   return (
-    <div className={cn("grid gap-4 md:grid-cols-2", className)}>
+    <div ref={ref} className={cn("grid gap-4 md:grid-cols-2", className)}>
       {images.map((src, i) => (
-        <Reveal key={src + i} delay={i * 0.05}>
-          <div
-            className={cn(
-              "relative overflow-hidden rounded-[1.5rem]",
-              i % 3 === 0 ? "aspect-[4/5]" : "aspect-[3/4]",
-            )}
-          >
-            <Image
-              src={src}
-              alt={`${alt} ${i + 1}`}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-            />
-          </div>
-        </Reveal>
+        <div
+          key={src + i}
+          className={cn(
+            "gallery-frame relative overflow-hidden opacity-0",
+            i % 3 === 0 ? "aspect-[4/5]" : "aspect-[3/4]",
+          )}
+        >
+          <Image
+            src={src}
+            alt={`${alt} ${i + 1}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
+          />
+        </div>
       ))}
+    </div>
+  );
+}
+
+function StatCount({ value, label }: { value: string; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      registerGsap();
+      if (!ref.current || prefersReducedMotion()) return;
+
+      gsap.fromTo(
+        ref.current.querySelector(".stat-value"),
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ref.current,
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    },
+    { scope: ref },
+  );
+
+  return (
+    <div ref={ref}>
+      <p className="stat-value font-serif text-6xl text-ink md:text-7xl">
+        {value}
+      </p>
+      <p className="text-label mt-4">{label}</p>
     </div>
   );
 }
@@ -67,6 +114,11 @@ export function CaseStudy({
   next: Project;
 }) {
   const hero = useRef<HTMLElement>(null);
+  const visual = [
+    ...project.moodboard,
+    ...project.photography,
+    ...project.gallery,
+  ].slice(0, 8);
 
   useGSAP(
     () => {
@@ -75,20 +127,20 @@ export function CaseStudy({
 
       gsap.fromTo(
         ".case-hero-img",
-        { scale: 1.12, filter: "blur(10px)" },
-        { scale: 1, filter: "blur(0px)", duration: 1.8, ease: "power3.out" },
+        { scale: 1.1 },
+        { scale: 1, duration: 1.8, ease: "power3.out" },
       );
 
       gsap.fromTo(
         ".case-hero-text",
-        { y: 40, opacity: 0 },
+        { y: 36, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: 1.2,
+          duration: 1.1,
           stagger: 0.1,
           ease: "power3.out",
-          delay: 0.3,
+          delay: 0.25,
         },
       );
     },
@@ -99,7 +151,7 @@ export function CaseStudy({
     <article>
       <section
         ref={hero}
-        className="relative flex min-h-screen items-end overflow-hidden bg-ink"
+        className="relative flex min-h-[100svh] items-end overflow-hidden bg-ink"
       >
         <div className="case-hero-img absolute inset-0">
           <Image
@@ -110,7 +162,7 @@ export function CaseStudy({
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
         </div>
         <div className="relative z-10 w-full px-6 pb-16 pt-40 md:px-10 md:pb-24">
           <div className="mx-auto max-w-[1600px]">
@@ -127,240 +179,171 @@ export function CaseStudy({
         </div>
       </section>
 
-      <section className="px-6 py-24 md:px-10 md:py-32">
-        <div className="mx-auto grid max-w-[1600px] gap-12 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <SectionHeading label="Overview" title="The brief" />
-          </div>
-          <div className="md:col-span-7 md:col-start-6">
-            <Reveal>
-              <p className="text-body text-lg md:text-xl">{project.overview}</p>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <ul className="mt-10 flex flex-wrap gap-3">
-                {project.deliverables.map((d) => (
-                  <li
-                    key={d}
-                    className="rounded-full border border-ink/15 px-4 py-2 text-sm text-muted"
-                  >
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-beige/40 px-6 py-24 md:px-10 md:py-32">
-        <div className="mx-auto grid max-w-[1600px] gap-16 md:grid-cols-2">
-          <div>
-            <SectionHeading label="Problem" title="What stood in the way" />
-            <Reveal>
-              <p className="text-body mt-8 text-lg">{project.problem}</p>
-            </Reveal>
-          </div>
-          <div>
-            <SectionHeading label="Strategy" title="How we approached it" />
-            <Reveal>
-              <p className="text-body mt-8 text-lg">{project.strategy}</p>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-24 md:px-10 md:py-32">
-        <div className="mx-auto max-w-[1600px]">
-          <SectionHeading label="Moodboard" title="Visual direction" />
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {project.moodboard.map((src, i) => (
-              <Reveal key={src} delay={i * 0.08}>
-                <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem]">
-                  <ParallaxImage
-                    src={src}
-                    alt={`${project.title} moodboard ${i + 1}`}
-                    className="h-full w-full"
-                    speed={10}
-                    sizes="33vw"
-                  />
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-24 md:px-10">
-        <div className="mx-auto grid max-w-[1600px] gap-12 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <SectionHeading
-              label="Creative Direction"
-              title="Atmosphere & craft"
-            />
-            <Reveal>
-              <p className="text-body mt-8 text-lg">
-                {project.creativeDirection}
-              </p>
-            </Reveal>
-          </div>
-          <div className="md:col-span-6 md:col-start-7">
-            <ImageGrid images={project.content} alt={`${project.title} content`} />
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-bg px-6 py-24 md:px-10 md:py-32">
-        <div className="mx-auto max-w-[1600px]">
-          <SectionHeading label="Brand Identity" title="Systems that endure" />
+      <section className="section mx-auto grid max-w-[1600px] gap-12 md:grid-cols-12">
+        <div className="md:col-span-4">
           <Reveal>
-            <p className="text-body mt-8 max-w-2xl text-lg">
-              {project.brandIdentity}
+            <p className="text-label mb-4">Overview</p>
+            <h2 className="text-display-sm text-ink">The brief</h2>
+          </Reveal>
+        </div>
+        <div className="md:col-span-7 md:col-start-6">
+          <Reveal>
+            <p className="font-serif text-2xl leading-snug text-ink md:text-3xl">
+              {project.overview}
             </p>
           </Reveal>
-          <div className="mt-10 flex flex-wrap gap-3">
-            {project.colors.map((color) => (
-              <div
-                key={color}
-                className="flex h-24 w-24 items-end rounded-2xl border border-ink/10 p-3"
-                style={{ backgroundColor: color }}
-              >
-                <span
-                  className={`text-[10px] ${
-                    color === "#111111" || color === "#1A1714"
-                      ? "text-bg"
-                      : "text-ink"
-                  }`}
-                >
-                  {color}
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-8 font-serif text-2xl text-ink">
-            {project.typography.display} / {project.typography.body}
-          </p>
-          <div className="mt-12">
-            <ImageGrid images={project.identity} alt={`${project.title} identity`} />
-          </div>
+          <Reveal delay={0.08}>
+            <ul className="mt-10 space-y-2">
+              {project.deliverables.map((d) => (
+                <li key={d} className="text-sm tracking-wide text-muted">
+                  — {d}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </section>
 
-      <section className="px-6 py-24 md:px-10">
-        <div className="mx-auto max-w-[1600px]">
-          <SectionHeading label="Instagram Feed" title="Social cadence" />
-          <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3">
-            {project.feed.map((src, i) => (
-              <Reveal key={src + i} delay={i * 0.04}>
-                <div className="relative aspect-square overflow-hidden rounded-xl">
-                  <Image
-                    src={src}
-                    alt={`${project.title} feed ${i + 1}`}
-                    fill
-                    sizes="33vw"
-                    className="object-cover"
-                  />
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 py-24 md:px-10">
-        <div className="mx-auto max-w-[1600px]">
-          <SectionHeading label="Photography" title="Campaign stills" />
-          <div className="mt-12 space-y-4">
-            {project.photography.map((src, i) => (
-              <Reveal key={src}>
-                <div className="relative aspect-[21/9] overflow-hidden rounded-[1.5rem]">
-                  <Image
-                    src={src}
-                    alt={`${project.title} photography ${i + 1}`}
-                    fill
-                    sizes="100vw"
-                    className="object-cover"
-                  />
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-beige/40 px-6 py-24 md:px-10">
-        <div className="mx-auto grid max-w-[1600px] gap-16 md:grid-cols-2">
-          <div>
-            <SectionHeading label="Packaging" title="Tactile moments" />
-            <div className="mt-10">
-              <ImageGrid
-                images={project.packaging}
-                alt={`${project.title} packaging`}
-                className="md:grid-cols-1"
-              />
+      <section className="relative bg-beige/40">
+        <div className="mx-auto grid max-w-[1600px] md:grid-cols-2">
+          <div className="px-6 py-20 md:sticky md:top-0 md:flex md:h-screen md:items-center md:px-10 md:py-0">
+            <div>
+              <p className="text-label mb-4">Problem</p>
+              <h2 className="text-display-sm text-ink">What stood in the way</h2>
+              <p className="text-body mt-8 max-w-md text-lg">{project.problem}</p>
             </div>
           </div>
-          <div>
-            <SectionHeading label="Website" title="Digital presence" />
-            <div className="mt-10">
-              <ImageGrid
-                images={project.website}
-                alt={`${project.title} website`}
-                className="md:grid-cols-1"
-              />
+          <div className="space-y-24 px-6 py-20 md:px-10 md:py-40">
+            <div>
+              <p className="text-label mb-4">Strategy</p>
+              <h2 className="text-display-sm text-ink">How we approached it</h2>
+              <p className="text-body mt-8 max-w-md text-lg">
+                {project.strategy}
+              </p>
+            </div>
+            <div>
+              <p className="text-label mb-4">Direction</p>
+              <h2 className="font-serif text-4xl text-ink md:text-5xl">
+                Atmosphere & craft
+              </h2>
+              <p className="text-body mt-8 max-w-md text-lg">
+                {project.creativeDirection}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="px-6 py-24 md:px-10 md:py-32">
+      <section className="section-lg">
         <div className="mx-auto max-w-[1600px]">
-          <SectionHeading label="Results" title="What changed" />
-          <div className="mt-16 grid gap-10 md:grid-cols-3">
-            {project.stats.map((stat) => (
-              <Reveal key={stat.label}>
-                <p className="font-serif text-6xl text-ink md:text-7xl">
-                  {stat.value}
-                </p>
-                <p className="text-label mt-4">{stat.label}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-6 pb-24 md:px-10 md:pb-32">
-        <div className="mx-auto max-w-[1600px]">
-          <SectionHeading label="Gallery" title="Selected frames" />
-          <div className="mt-12">
-            <ImageGrid images={project.gallery} alt={`${project.title} gallery`} />
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-ink/10 px-6 py-24 md:px-10">
-        <div className="mx-auto flex max-w-[1600px] flex-col items-start justify-between gap-10 md:flex-row md:items-end">
-          <div>
-            <p className="text-label mb-4">Next Project</p>
-            <Link
-              href={`/work/${next.slug}`}
-              className="font-serif text-5xl text-ink transition-colors duration-500 hover:text-gold md:text-7xl"
-              data-cursor="OPEN"
-            >
-              {next.title}
-            </Link>
-            <p className="mt-3 text-muted">
-              {next.category} — {next.year}
+          <Reveal>
+            <p className="font-serif text-5xl text-ink md:text-7xl">
+              Visual chapter
             </p>
+            <p className="text-body mt-4 max-w-md">
+              Mood, photography, and selected frames — one immersive gallery.
+            </p>
+          </Reveal>
+          <div className="mt-14">
+            <GalleryBatch images={visual} alt={project.title} />
           </div>
-          <Link
-            href="/#work"
-            className={buttonVariants({ variant: "outline" })}
-            data-cursor="VIEW"
-          >
-            All Work
-          </Link>
         </div>
       </section>
+
+      <section className="overflow-hidden">
+        <div className="grid md:grid-cols-4">
+          {project.colors.map((color) => (
+            <div
+              key={color}
+              className="group relative flex h-[30vh] min-h-[180px] items-end p-6 transition-transform duration-700 ease-luxury hover:z-10 hover:scale-[1.02] md:h-[45vh]"
+              style={{ backgroundColor: color }}
+              data-cursor="VIEW"
+            >
+              <span
+                className={`text-sm tracking-[0.2em] uppercase opacity-0 transition-opacity duration-500 group-hover:opacity-100 ${
+                  color === "#111111" || color === "#1A1714"
+                    ? "text-bg"
+                    : "text-ink"
+                }`}
+              >
+                {color}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="section mx-auto max-w-[1600px]">
+          <Reveal>
+            <p className="font-serif text-3xl text-ink md:text-5xl">
+              {project.brandIdentity}
+            </p>
+            <p className="text-label mt-8">
+              {project.typography.display} / {project.typography.body}
+            </p>
+          </Reveal>
+          <div className="mt-12">
+            <GalleryBatch
+              images={[...project.identity, ...project.packaging, ...project.website]}
+              alt={`${project.title} identity`}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="section bg-beige/35">
+        <div className="mx-auto max-w-[1600px]">
+          <Reveal>
+            <p className="text-label mb-4">Results</p>
+            <h2 className="text-display-sm text-ink">What changed</h2>
+          </Reveal>
+          <div className="mt-16 grid gap-12 md:grid-cols-3">
+            {project.stats.map((stat) => (
+              <StatCount
+                key={stat.label}
+                value={stat.value}
+                label={stat.label}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative min-h-[90svh] overflow-hidden bg-ink">
+        <Link
+          href={`/work/${next.slug}`}
+          className="group absolute inset-0 block"
+          data-cursor="OPEN"
+        >
+          <Image
+            src={next.heroImage}
+            alt={next.title}
+            fill
+            sizes="100vw"
+            className="object-cover transition-transform duration-[1.6s] ease-luxury group-hover:scale-[1.03]"
+          />
+          <div className="absolute inset-0 bg-ink/45 transition-colors duration-700 group-hover:bg-ink/35" />
+          <div className="absolute inset-x-0 bottom-0 px-6 pb-16 md:px-10 md:pb-24">
+            <div className="mx-auto max-w-[1600px]">
+              <p className="text-label text-beige/70">Next Project</p>
+              <h2 className="mt-4 font-serif text-5xl text-bg md:text-8xl">
+                {next.title}
+              </h2>
+              <p className="mt-4 text-beige/80">
+                {next.category} — {next.year}
+              </p>
+            </div>
+          </div>
+        </Link>
+      </section>
+
+      <div className="flex justify-center bg-ink px-6 pb-16">
+        <Link
+          href="/#work"
+          className="link-underline text-label text-bg/70"
+          data-cursor="VIEW"
+        >
+          All Work
+        </Link>
+      </div>
     </article>
   );
 }

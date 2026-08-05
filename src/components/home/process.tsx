@@ -1,75 +1,114 @@
 "use client";
 
-import { useRef } from "react";
+import Image from "next/image";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { site } from "~/content/site";
 import { Reveal } from "~/components/motion/reveal";
-import { gsap, prefersReducedMotion, registerGsap } from "~/lib/gsap";
+import { cn } from "~/lib/cn";
+import {
+  gsap,
+  prefersReducedMotion,
+  registerGsap,
+  ScrollTrigger,
+} from "~/lib/gsap";
 
 export function Process() {
   const root = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const step = site.process.steps[active]!;
 
   useGSAP(
     () => {
       registerGsap();
       if (!root.current || prefersReducedMotion()) return;
+      if (window.innerWidth < 768) return;
 
-      gsap.fromTo(
-        ".process-line",
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top 60%",
-            end: "bottom 70%",
-            scrub: true,
-          },
-        },
-      );
-
-      gsap.utils.toArray<HTMLElement>(".process-step").forEach((step) => {
-        gsap.fromTo(
-          step,
-          { opacity: 0.3, x: -20 },
-          {
-            opacity: 1,
-            x: 0,
-            scrollTrigger: {
-              trigger: step,
-              start: "top 80%",
-              end: "top 50%",
-              scrub: true,
-            },
-          },
-        );
+      const steps = gsap.utils.toArray<HTMLElement>(".process-trigger");
+      steps.forEach((el, i) => {
+        ScrollTrigger.create({
+          trigger: el,
+          start: "top 55%",
+          end: "bottom 55%",
+          onEnter: () => setActive(i),
+          onEnterBack: () => setActive(i),
+        });
       });
     },
     { scope: root },
   );
 
   return (
-    <section ref={root} className="px-6 py-28 md:px-10 md:py-40">
+    <section ref={root} className="section-lg bg-beige/35">
       <div className="mx-auto max-w-[1600px]">
         <Reveal>
-          <p className="text-label mb-4">{site.process.label}</p>
-          <h2 className="text-display-sm mb-20 max-w-xl whitespace-pre-line text-ink">
+          <p className="text-label mb-5">{site.process.label}</p>
+          <h2 className="text-display-sm max-w-xl whitespace-pre-line text-ink">
             {site.process.heading}
           </h2>
         </Reveal>
-        <div className="relative pl-8 md:pl-12">
-          <div className="process-line absolute bottom-0 left-0 top-0 w-px origin-top bg-gold" />
-          <ol className="space-y-10 md:space-y-14">
-            {site.process.steps.map((step, i) => (
-              <li key={step} className="process-step relative">
-                <span className="absolute -left-[2.15rem] top-2 h-3 w-3 rounded-full bg-ink md:-left-[2.9rem]" />
-                <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:gap-10">
-                  <span className="text-label w-16">0{i + 1}</span>
-                  <h3 className="font-serif text-4xl text-ink md:text-6xl">
-                    {step}
-                  </h3>
+
+        <div className="mt-16 grid gap-12 md:mt-24 md:grid-cols-12 md:gap-8">
+          <div className="md:col-span-5 md:sticky md:top-28 md:self-start">
+            <div className="relative aspect-[4/5] overflow-hidden md:aspect-[3/4]">
+              {site.process.steps.map((s, i) => (
+                <div
+                  key={s.title}
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-700 ease-luxury",
+                    i === active ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  <Image
+                    src={s.image}
+                    alt=""
+                    fill
+                    sizes="50vw"
+                    className="object-cover"
+                  />
                 </div>
+              ))}
+            </div>
+            <p className="mt-6 font-serif text-3xl text-ink md:text-4xl">
+              {step.title}
+            </p>
+            <p className="text-body mt-4 max-w-md">{step.body}</p>
+          </div>
+
+          <ol className="md:col-span-6 md:col-start-7">
+            {site.process.steps.map((s, i) => (
+              <li
+                key={s.title}
+                className="process-trigger border-t border-ink/10 py-8 last:border-b md:py-14"
+              >
+                <button
+                  type="button"
+                  className="flex w-full items-baseline gap-6 text-left"
+                  onMouseEnter={() => setActive(i)}
+                  onFocus={() => setActive(i)}
+                  onClick={() => setActive(i)}
+                  data-cursor="VIEW"
+                >
+                  <span className="text-label w-10 shrink-0">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={cn(
+                      "font-serif text-4xl transition-colors duration-500 md:text-6xl",
+                      i === active ? "text-ink" : "text-ink/30",
+                    )}
+                  >
+                    {s.title}
+                  </span>
+                </button>
+                <p
+                  className={cn(
+                    "mt-4 max-w-md pl-16 text-sm leading-relaxed text-muted transition-opacity duration-500 md:hidden",
+                    i === active ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  {s.body}
+                </p>
               </li>
             ))}
           </ol>

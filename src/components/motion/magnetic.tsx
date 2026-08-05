@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -21,13 +21,21 @@ export function Magnetic({
   ...props
 }: MagneticProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 200, damping: 20, mass: 0.4 });
   const springY = useSpring(y, { stiffness: 200, damping: 20, mass: 0.4 });
 
+  useEffect(() => {
+    setEnabled(
+      !prefersReducedMotion() &&
+        window.matchMedia("(pointer: fine)").matches,
+    );
+  }, []);
+
   const onMove = (e: React.MouseEvent) => {
-    if (prefersReducedMotion() || !ref.current) return;
+    if (!enabled || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const dx = e.clientX - (rect.left + rect.width / 2);
     const dy = e.clientY - (rect.top + rect.height / 2);
@@ -43,8 +51,8 @@ export function Magnetic({
   return (
     <motion.div
       ref={ref}
-      className={cn("inline-block will-change-transform", className)}
-      style={{ x: springX, y: springY }}
+      className={cn("inline-block", enabled && "will-change-transform", className)}
+      style={enabled ? { x: springX, y: springY } : undefined}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       {...props}

@@ -1,37 +1,53 @@
 "use client";
 
+import Image from "next/image";
 import { site } from "~/content/site";
 import { Reveal } from "~/components/motion/reveal";
-import { ParallaxImage } from "~/components/motion/parallax-image";
 
 export function About() {
   return (
-    <section id="about" className="relative overflow-hidden px-6 py-28 md:px-10 md:py-40">
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 opacity-30 max-md:hidden">
-        <ParallaxImage
-          src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80"
+    <section id="about" className="relative overflow-hidden">
+      <div className="relative h-[48vh] min-h-[320px] w-full md:h-[62vh]">
+        <Image
+          src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2200&q=80"
           alt=""
-          className="h-full w-full"
-          speed={15}
+          fill
+          sizes="100vw"
+          className="object-cover"
         />
+        <div className="absolute inset-0 bg-ink/15" />
+        <Reveal
+          variant="fade-up"
+          className="absolute inset-x-6 bottom-8 md:inset-x-10 md:bottom-14"
+        >
+          <p className="max-w-4xl font-serif text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] text-bg">
+            {site.about.pullQuote}
+          </p>
+        </Reveal>
       </div>
-      <div className="relative mx-auto grid max-w-[1600px] gap-12 md:grid-cols-12 md:gap-16">
-        <div className="md:col-span-5">
+
+      <div className="section mx-auto grid max-w-[1600px] gap-12 md:grid-cols-12 md:gap-8">
+        <div className="md:col-span-4">
           <Reveal>
-            <p className="text-label mb-6">{site.about.label}</p>
+            <p className="text-label mb-5">{site.about.label}</p>
             <h2 className="text-display-sm whitespace-pre-line text-ink">
               {site.about.heading}
             </h2>
           </Reveal>
         </div>
-        <div className="md:col-span-6 md:col-start-7">
-          {site.about.paragraphs.map((p, i) => (
-            <Reveal key={p} delay={0.1 * (i + 1)}>
-              <p className="text-body mb-8 text-lg md:text-xl">{p}</p>
-            </Reveal>
-          ))}
-          <Reveal delay={0.3}>
-            <p className="font-serif text-2xl text-ink md:text-3xl">
+        <div className="md:col-span-7 md:col-start-6">
+          <Reveal delay={0.05}>
+            <p className="font-serif text-2xl leading-snug text-ink md:text-3xl lg:text-4xl">
+              {site.about.paragraphs[0]}
+            </p>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p className="text-body mt-8 max-w-xl text-base md:text-lg">
+              {site.about.paragraphs[1]}
+            </p>
+          </Reveal>
+          <Reveal delay={0.18}>
+            <p className="mt-12 max-w-md text-sm leading-relaxed tracking-wide text-muted">
               {site.positioning}
             </p>
           </Reveal>

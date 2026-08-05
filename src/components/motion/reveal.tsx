@@ -5,51 +5,79 @@ import { useGSAP } from "@gsap/react";
 import { cn } from "~/lib/cn";
 import { gsap, prefersReducedMotion, registerGsap } from "~/lib/gsap";
 
+type RevealVariant = "fade-up" | "clip" | "mask" | "none";
+
 export function Reveal({
   children,
   className,
   delay = 0,
-  y = 40,
+  y = 36,
+  variant = "fade-up",
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   y?: number;
+  variant?: RevealVariant;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       registerGsap();
-      if (!ref.current) return;
+      if (!ref.current || variant === "none") return;
+
+      const el = ref.current;
 
       if (prefersReducedMotion()) {
-        gsap.set(ref.current, { opacity: 1, y: 0 });
+        gsap.set(el, { opacity: 1, y: 0, clearProps: "clipPath,transform" });
+        return;
+      }
+
+      if (variant === "clip" || variant === "mask") {
+        gsap.fromTo(
+          el,
+          { clipPath: "inset(100% 0% 0% 0%)" },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 1.25,
+            delay,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 88%",
+              once: true,
+            },
+          },
+        );
         return;
       }
 
       gsap.fromTo(
-        ref.current,
-        { opacity: 0, y, filter: "blur(6px)" },
+        el,
+        { opacity: 0, y },
         {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
-          duration: 1.2,
+          duration: 1.1,
           delay,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: ref.current,
-            start: "top 85%",
+            trigger: el,
+            start: "top 88%",
+            once: true,
           },
         },
       );
     },
-    { scope: ref },
+    { scope: ref, dependencies: [variant, delay, y] },
   );
 
   return (
-    <div ref={ref} className={cn("opacity-0", className)}>
+    <div
+      ref={ref}
+      className={cn(variant === "fade-up" && "opacity-0", className)}
+    >
       {children}
     </div>
   );

@@ -1,6 +1,5 @@
 import { Hero } from "~/components/home/hero";
 import { About } from "~/components/home/about";
-import { Philosophy } from "~/components/home/philosophy";
 import { Services } from "~/components/home/services";
 import { FeaturedWork } from "~/components/home/featured-work";
 import { Moodboards } from "~/components/home/moodboards";
@@ -14,7 +13,6 @@ export default function HomePage() {
     <>
       <Hero />
       <About />
-      <Philosophy />
       <Services />
       <FeaturedWork />
       <Moodboards />
