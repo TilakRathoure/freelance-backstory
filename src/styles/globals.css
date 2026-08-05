@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, "Times New Roman",
+    serif;
+
+  --color-bg: #f8f6f2;
+  --color-ink: #111111;
+  --color-muted: #6d6256;
+  --color-gold: #b88a4a;
+  --color-beige: #e8ded1;
+
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-gold) 35%, transparent);
+    color: var(--color-ink);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  .text-display {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-size: clamp(3rem, 9vw, 7.5rem);
+  }
+
+  .text-display-sm {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+  }
+
+  .text-label {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .text-body {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+
+  .ease-luxury {
+    transition-timing-function: var(--ease-luxury);
+  }
+
+  .hide-cursor {
+    cursor: none;
+  }
+
+  @media (pointer: fine) {
+    .hide-cursor,
+    .hide-cursor * {
+      cursor: none !important;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
